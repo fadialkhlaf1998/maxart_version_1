@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Add Sub Admin</title>
+
+    <script src="js-libs/jquery-3.5.1.js"></script>
+    <script src="js-libs/dataTables.bootstrap5.min.js"></script>
+    <script src="js-libs/jquery.dataTables.min.js"></script>
+    <script src="javascripts/global.js"></script>
+
+
+    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="stylesheets/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="stylesheets/global.css" rel="stylesheet">
+
+    <script>
+        document.onreadystatechange = () => {
+            document.getElementById("my-alert").style.display = "none";
+            document.getElementsByClassName("loader-container")[0].style.display = "none";
+            document.getElementById("tool").classList.add('active');
+        };
+        function next() {
+            var can_add=true;
+            var dnd = document.querySelector('#select-company');
+           
+            var e1 = document.getElementById("select-company");
+            var company_id = e1.value;
+            var company = dnd.options[dnd.selectedIndex].id;
+            if(company==-1){
+                can_add=false;
+                color_red("company-l");
+            }else{
+                color_black("company-l");
+            }
+            if(can_add){
+                document.getElementsByClassName("loader-container")[0].style.display = "flex";
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                    "company_id":company_id,
+                    "company":company
+                });
+
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: 'follow'
+                };
+
+                fetch(location.protocol+'//' + location.host +"/api/create-directory", requestOptions)
+                    .then(response => {
+                        if(response.status==200){
+                            window.location = '/tool';
+                        }else{
+
+                            response.text().then(result=>{
+                                document.getElementsByClassName("loader-container")[0].style.display = "none";
+                                document.getElementById("my-alert").innerText = result;
+                                document.getElementById("my-alert").style.display = "block";
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementsByClassName("loader-container")[0].style.display = "none";
+                        document.getElementById("my-alert").innerText = "some thing went wrong";
+                        document.getElementById("my-alert").style.display = "block";
+                    });
+            }
+        }
+    </script>
+
+
+</head>
+<body>
+<% include ../spiner.html%>
+<div class="my-container">
+    <div class="left-side">
+        <% include ../admin_side_bar.html %>
+    </div>
+    <div class="right-side">
+        <div id="my-alert" class="alert alert-danger" role="alert">
+
+        </div>
+        <div class="btn-container">
+            <a class="cancel-btn" href="javascript:history.back()">cancel</a>
+            <span class="submit-btn" onclick="next()">Next</span>
+        </div>
+        <div class="dt-container">   
+            <label class="form-label" id="company-l">Company</label>
+            <select id="select-company"  class="form-select" aria-label="Default select example" >
+                <option value="-1" selected>Open this select menu</option>
+                <%company.forEach(value=>{%>
+                <option id="<%=value.name%>" value="<%=value.id%>" value_2="<%=value.name%>"><%=value.name%></option>
+                <%})%>
+            </select>
+            <br>
+            <br>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

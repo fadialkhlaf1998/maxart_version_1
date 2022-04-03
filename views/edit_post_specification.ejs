@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <script src="js-libs/jquery-3.5.1.js"></script>
+    <script src="js-libs/dataTables.bootstrap5.min.js"></script>
+    <script src="js-libs/jquery.dataTables.min.js"></script>
+    <script src="javascripts/global.js"></script>
+
+    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="stylesheets/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="stylesheets/global.css" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $("#meta-err").css("display", "none");
+        });
+
+    </script>
+
+    <script>
+        var form = new FormData();
+        var images = [];
+        var main_image = null;
+
+
+        document.onreadystatechange = () => {
+            document.getElementById("my-alert").style.display = "none";
+            document.getElementsByClassName("loader-container")[0].style.display = "none";
+            document.getElementById("post-specification-id=<%=id%>").classList.add('active');
+            images=[];
+            document.getElementById("my-alert").style.display = "none";
+            main_image="<%=data.image%>";
+            console.log(main_image);
+            if(main_image.length==0||main_image==null){
+            }else{
+                document.getElementById("main-image-section").innerHTML="<img class='added-image' src='"+"<%=data.image%>"+"'>";
+
+            }
+            document.getElementById("images-section").innerHTML="";
+            <%data.images.forEach(value=>{%>
+            images.push("<%=value.link%>");
+            document.getElementById("images-section").innerHTML = document.getElementById("images-section").innerHTML + "<img  onmouseover='hover(this);' onmouseout='hover(this);' delete='"+location.protocol+'//' + location.host+"/images/delete.png"+"' onclick='delete_photo(this)' data='"+"<%=value.link%>"+"' class='added-image' src='"+"<%=value.link%>"+"'>"
+            <%})%>
+            
+        };
+        function save() {
+            var can_add=true;
+
+
+            var post_type_id = "<%=id%>";
+            var e2 = document.getElementById("select-parent_1");
+            var parent_1 = e2.value;
+            if(parent_1==-1){
+                parent_1=null;
+            }
+
+            var e3 = document.getElementById("select-parent_2");
+            var parent_2 = e3.value;
+            if(parent_2==-1){
+                parent_2=null;
+            }
+
+            var e4 = document.getElementById("select-parent_3");
+            var parent_3 = e4.value;
+            if(parent_3==-1){
+                parent_3=null;
+            }
+            
+            var e5 = document.getElementById("select-parent_4");
+            var parent_4 = e5.value;
+            if(parent_4==-1){
+                parent_4=null;
+            }
+
+            var e6 = document.getElementById("select-parent_5");
+            var parent_5 = e6.value;
+            if(parent_5==-1){
+                parent_5=null;
+            }
+
+            var active = 0;
+            if(document.getElementById("active-i").checked){
+               active=1;
+            }
+    
+            if(document.getElementById("title-i").value==""){
+                can_add=false;
+                color_red("title-l");
+            }else{
+                color_black("title-l");
+            }
+
+            if(can_add){
+                document.getElementsByClassName("loader-container")[0].style.display = "flex";
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                    "parent_1":parent_1,
+                    "parent_2":parent_2,
+                    "parent_3":parent_3,
+                    "parent_4":parent_4,
+                    "parent_5":parent_5,
+                    "post_type_id":post_type_id,
+                    "publish":active,
+                    "search":document.getElementById("search-i").value,
+                    "title":document.getElementById("title-i").value,
+                    "sub_title":document.getElementById("sub_title-i").value,
+                    "image":main_image,
+                    "sku":document.getElementById("sku-i").value,
+                    "slug":document.getElementById("slug-i").value,
+                    "price":document.getElementById("price-i").value,
+                    "regular_price":document.getElementById("regular_price-i").value,
+                    "images":images,
+                    "description":document.getElementById("desc-i").value,
+                    "availability":document.getElementById("availability-i").value,
+                    "meta_title":document.getElementById("meta_title-i").value,
+                    "meta_description":document.getElementById("meta_description-i").value,
+                    "id":document.getElementById("title-i").getAttribute("data-id"),
+                });
+
+                var requestOptions = {
+                    method: 'PUT',
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: 'follow'
+                };
+
+                fetch(location.protocol+'//' + location.host +"/api/post", requestOptions)
+                    .then(response => {
+                        if(response.status==200){
+                            var settings = {
+                                "url": location.protocol+'//' + location.host + '/upload-avatar',
+                                "method": "POST",
+                                "timeout": 0,
+                                "processData": false,
+                                "mimeType": "multipart/form-data",
+                                "contentType": false,
+                                "data": form
+                            };
+
+                            $.ajax(settings).done(function (response) {
+                                document.getElementsByClassName("loader-container")[0].style.display = "none";
+                                window.location = '/post-specification?id=<%=id%>';
+                            });
+
+
+                        }else{
+                            response.text().then(result=>{
+                                document.getElementsByClassName("loader-container")[0].style.display = "none";
+                                document.getElementById("my-alert").innerText = result;
+                                document.getElementById("my-alert").style.display = "block";
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementsByClassName("loader-container")[0].style.display = "none";
+                        document.getElementById("my-alert").innerText = "some thing went wrong";
+                        document.getElementById("my-alert").style.display = "block";
+                    });
+            }
+        }
+
+        function delete_photo(value) {
+            for(var i =0 ;i<images.length;i++){
+                if(images[i]==value.getAttribute("data")){
+                    images.splice(i,1);
+                    value.remove();
+                    return;
+                }
+            }
+        }
+
+        function hover(value) {
+            var temp = value.getAttribute("delete");
+            value.setAttribute("delete",value.getAttribute("src"));
+            value.setAttribute("src",temp);
+        }
+
+        function add_photos() {
+            $.each($('#multi-upload-image')[0].files, function (i, file) {
+                var newName=Date.now()+file.name;
+                document.getElementById("images-section").innerHTML= document.getElementById("images-section").innerHTML+"<img  onmouseover='hover(this);' onmouseout='hover(this);' delete='"+location.protocol+'//' + location.host+"/images/delete.png"+"' onclick='delete_photo(this)' data='"+location.protocol+'//' + location.host+"/uploads/"+newName+"' class='added-image' src='"+URL.createObjectURL(file)+"'>";
+                images.push(location.protocol+'//' + location.host+"/uploads/"+newName);
+                form.append('profile-files', file,newName);
+            });
+
+        }
+        function add_photo() {
+            $.each($('#upload-image')[0].files, function (i, file) {
+                // alert(location.protocol+'//' + location.host+"/uploads/"+file.name);
+                document.getElementById("main-image-section").innerHTML= "<img class='added-image' src='"+URL.createObjectURL(file)+"'>";
+                var newName=Date.now()+file.name;
+
+                // alert(newName);
+                main_image = location.protocol+'//' + location.host+"/uploads/"+newName;
+                form.append('profile-files', file,newName);
+            });
+        }
+        function change_meta_description(){
+            var text = document.getElementById("meta_description-i").value;
+            document.getElementById("counter").innerHTML="Meta Description length: "+text.length;
+        }
+        function test(){
+           console.log("****")
+        }
+    </script>
+
+
+</head>
+<body>
+<% include spiner.html%>
+<div class="my-container">
+    <div class="left-side">
+        <% include side_bar.ejs %>
+    </div>
+    <div class="right-side">
+        <div id="my-alert" class="alert alert-danger" role="alert">
+
+        </div>
+        <div class="btn-container">
+            <a class="cancel-btn" href="javascript:history.back()">cancel</a>
+            <span class="submit-btn" onclick="save()">save</span>
+        </div>
+        <div class="dt-container">
+
+            <label class="form-label" id="title-l">Title</label>
+            <input data-id="<%=data.id%>" class="form-control" value="<%=data.title%>" type="text" id="title-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="sub_title-l">Sub Title</label>
+            <input class="form-control" type="text" value="<%=data.sub_title%>" id="sub_title-i"/>
+            <br>
+            <br>
+
+            <form id="upload-from" name="multi" method="POST" action="/upload" onchange="add_photo()"
+            enctype="multipart/form-data">
+                <label id="image-label" class="form-label">Main Image :</label>
+                <input id="upload-image" style="display: inline-block" class="form-control" type="file"
+                        value="path-to-standard-location-for-quicken-data-files" name="profile-file" required />
+                  </form>
+            <div id="main-image-section" class="added-image-section">
+
+            </div>
+            <br>
+            <br>
+
+            <label class="form-label" id="desc-l">Description</label>
+            <textarea  class="form-control" style="min-height: 200px;" type="text" id="desc-i"><%=data.description%></textarea>
+            <br>
+            <br>
+
+            <label class="form-label" id="search-l">Search</label>
+            <input class="form-control" value="<%=data.search%>" placeholder="Key Words for search" type="text" id="search-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="price-l">Price</label>
+            <input class="form-control" value="<%=data.price%>" placeholder="Please enter by this form ex: 4200.00" type="text" id="price-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="regular_price-l">Regular Price</label>
+            <input class="form-control" value="<%=data.regular_price%>" placeholder="Please enter by this form ex: 4200.00" type="text" id="regular_price-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="availability-l">Availability</label>
+            <input class="form-control"  value="<%=data.availability%>" placeholder="Please enter by this form ex: 500" type="text" id="availability-i"/>
+            <br>
+            <br>
+
+
+            <label class="form-label" id="active-l">Publish</label>
+            <%if(data.publish==1){%>
+                <input type="checkbox" style="margin-left: 10px;" id="active-i" checked/>
+            <%}else{%>
+                <input type="checkbox" style="margin-left: 10px;" id="active-i"/>
+            <%}%>
+            
+            <br>
+            <br>
+
+            <form id="multi-upload-from" name="multi" method="POST" action="/upload" onchange="add_photos()"
+                  enctype="multipart/form-data">
+                <label id="multi-image-label" class="form-label">Images :</label>
+                <input id="multi-upload-image" style="display: inline-block" class="form-control" type="file"
+                       value="path-to-standard-location-for-quicken-data-files" name="profile-files" required multiple/>
+            </form>
+            <div id="images-section" class="added-image-section">
+
+            </div>
+            <br>
+            <br>
+
+
+            <label class="form-label" id="parent_1-l">Parent 1</label>
+            <select id="select-parent_1"  class="form-select" aria-label="Default select example"  >
+                <option value="-1" selected>Open this select menu</option>
+                <%post.forEach(value=>{%>
+
+                    <%if(data.parent_1==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>
+
+                
+                <%})%>
+            </select>
+            <br>
+            <br>
+
+            <label class="form-label" id="parent_2-l">Parent 2</label>
+            <select id="select-parent_2"  class="form-select" aria-label="Default select example"  >
+                <option value="-1" selected>Open this select menu</option>
+                <%post.forEach(value=>{%>
+
+                    <%if(data.parent_2==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>
+                <%})%>
+            </select>
+            <br>
+            <br>
+
+            <label class="form-label" id="parent_3-l">Parent 3</label>
+            <select id="select-parent_3"  class="form-select" aria-label="Default select example"  >
+                <option value="-1" selected>Open this select menu</option>
+                <%post.forEach(value=>{%>
+                    <%if(data.parent_3==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>
+                <%})%>
+            </select>
+            <br>
+            <br>
+
+            <label class="form-label" id="parent_4-l">Parent 4</label>
+            <select id="select-parent_4"  class="form-select" aria-label="Default select example"  >
+                <option value="-1" selected>Open this select menu</option>
+                <%post.forEach(value=>{%>
+                    <%if(data.parent_4==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>                <%})%>
+            </select>
+            <br>
+            <br>
+
+            <label class="form-label" id="parent_5-l">Parent 5</label>
+            <select id="select-parent_5"  class="form-select" aria-label="Default select example"  >
+                <option value="-1" selected>Open this select menu</option>
+                <%post.forEach(value=>{%>
+                    <%if(data.parent_5==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>                <%})%>
+            </select>
+            <br>
+            <br>
+
+            <label class="form-label" id="sku-l">SKU</label>
+            <input class="form-control" value="<%=data.sku%>" type="text" id="sku-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="slug-l">Slug</label>
+            <input class="form-control" value="<%=data.slug%>" type="text" id="slug-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="meta_title-l">Meta Title</label>
+            <input class="form-control" type="text" value="<%=data.meta_title%>" id="meta_title-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="meta_description-l">Meta Description</label>
+            <input onwaiting="test()" oninput="change_meta_description()" class="form-control" value="<%=data.meta_description%>" type="text" id="meta_description-i"/>
+            <div id="counter">Meta Description length: <%=data.meta_description!=null?data.meta_description.length:0%></div>
+            <br>
+            <br>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+</scrip>
+
+
+
+</body>
+</html>

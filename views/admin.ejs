@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin</title>
+
+    <script src="js-libs/jquery-3.5.1.js"></script>
+    <script src="js-libs/dataTables.bootstrap5.min.js"></script>
+    <script src="js-libs/jquery.dataTables.min.js"></script>
+
+    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="stylesheets/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="stylesheets/global.css" rel="stylesheet">
+
+
+    <script>
+        document.onreadystatechange = () => {
+            document.getElementById("my-alert").style.display = "none";
+            document.getElementById("admin").classList.add('active');
+        };
+        $(document).ready(function() {
+            var url = location.protocol+'//' + location.host + '/api/admin';
+            $('#datatable').DataTable({
+                createdRow: function( row, data, dataIndex ) {
+                       $(row).attr("id","row"+data.id)
+                },
+                "stateSave": true,
+                "ajax": {
+                    "url": url,
+                    "dataSrc": ""
+                },
+                "columns": [
+                    {"data": "id"},
+                    {"data": "username"},
+                    {"data": "password"},
+                    {
+                        "data": "id",
+                        "render": function (data, type, row) {
+                            return '<span> <a href="./edit-admin?id=' + data + '" class="btn"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a><a id="delete-btn-id" onclick="_delete(' + data + ')" data-id="' + data + '"  class="btn deleteAction" ><i class="fa fa-trash-o" aria-hidden="true"></i></a></span>';
+                        }
+                    }
+                ]
+            });
+        } );
+
+        function _delete(id) {
+
+
+            let isExecuted = confirm("Are you sure to delete this element?");
+            if(isExecuted){
+                var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+                "id": id
+            });
+
+            var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch(location.protocol+'//' + location.host+"/api/admin", requestOptions)
+                .then(response => {
+                    if(response.status==200){
+                        var myobj = document.getElementById("row"+id);
+                        myobj.remove();
+                    }else{
+
+                        response.text().then(result=>{
+                            document.getElementById("my-alert").innerText = result;
+                            document.getElementById("my-alert").style.display = "block";
+                        })
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("my-alert").innerText = "some thing went wrong";
+                    document.getElementById("my-alert").style.display = "block";
+                });
+            }
+            
+        }  
+        
+    </script>
+</head>
+<body>
+
+<div class="my-container">
+    <div class="left-side">
+        <% include admin_side_bar.html %>
+    </div>
+    <div class="right-side">
+        <div id="my-alert" class="alert alert-danger" role="alert">
+
+        </div>
+        <div class="btn-container">
+            <a class="submit-btn" href="/add-admin">add new</a>
+        </div>
+        <div class="dt-container">
+            <table id="datatable" class="table table-striped" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

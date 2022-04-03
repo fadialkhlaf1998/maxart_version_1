@@ -1,0 +1,73 @@
+<div>
+    
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" width="89.82" height="89.822" viewBox="0 0 89.82 89.822">
+        <g id="Group_3978" data-name="Group 3978" transform="translate(-336 -217)">
+          <path id="Path_1" data-name="Path 1" d="M44.9,0A44.911,44.911,0,1,0,72.153,80.559C76.8,88.34,89.82,89.822,89.82,89.822V44.912A44.914,44.914,0,0,0,44.9,0m0,69.746A24.889,24.889,0,1,1,69.8,44.859,24.9,24.9,0,0,1,44.9,69.746" transform="translate(336 217)" fill="#fff"/>
+          <path id="Path_2" data-name="Path 2" d="M54.161,44.15A10.006,10.006,0,1,0,64.167,54.156,10.006,10.006,0,0,0,54.161,44.15" transform="translate(326.749 207.75)" fill="#fff"/>
+        </g>
+      </svg>
+      
+
+    </div>
+    
+    <script>
+        
+        function activate(id){
+          
+            // document.getElementsByClassName("active").classList.add('left-item-container');
+            // alert(id);
+            // document.getElementsByClassName("left-item-container").classList.remove('active');
+            
+            document.getElementById(id).classList.add('active');
+            alert(id);
+        }
+    </script>
+
+    <a id="admin" href="/admin" class="left-item-container">
+        
+        <span class="left-item" >
+            Admin
+        </span>
+    </a>
+    
+    <a id="sub-admin" href="/sub-admin" class="left-item-container">
+      <span class="left-item" >
+          Sub Admin
+      </span>
+  </a>
+    
+    <a id="company" href="/company" class="left-item-container">
+        <span class="left-item" >
+            Company
+        </span>
+    </a>
+
+    <a id="tool" href="/tool" class="left-item-container">
+        <span class="left-item" >
+            Tool
+        </span>
+    </a>
+    
+    
+    <a href="/admin" onclick="api()" class="left-item-container">
+
+        <span class="left-item" >
+            Logout
+        </span>
+    </a>
+    <script>
+        function api(){
+            const response = fetch( location.protocol+'//'  + location.host + '/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'closeSession': true,
+                }),
+            });
+        }
+    </script>
+
+</div>
