@@ -28,6 +28,7 @@
                     createdRow: function( row, data, dataIndex ) {
                        $(row).attr("id","row"+data.id)
                     },
+                    "lengthMenu": [[5, 10, 20,100,500, -1], [5, 10, 20,100,500, 'All']],
                     "stateSave": true,
                     
                 "ajax": {
@@ -51,6 +52,7 @@
                            
                         }
                     },
+                    {"data": "position"},
                     {
                         "data": "id",
                         "render": function (data, type, row) {
@@ -114,7 +116,7 @@
         <div class="btn-container">
             <a class="submit-btn" href="/add-post">add new</a>
         </div>
-        <div class="dt-container">
+        <div class="container dt-container">
             <table id="datatable" class="table table-striped" style="width:100%">
                 <thead>
                 <tr>
@@ -122,6 +124,7 @@
                     <th>Title</th>
                     <th>Type</th>
                     <th>Image</th>
+                    <th>Position</th>
                     <th>Action</th>
                 </tr>
                 </thead>

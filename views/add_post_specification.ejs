@@ -11,10 +11,15 @@
     <script src="js-libs/dataTables.bootstrap5.min.js"></script>
     <script src="js-libs/jquery.dataTables.min.js"></script>
     <script src="javascripts/global.js"></script>
+    <script src="js-libs/jquery-3.6.0.js"></script>
+    <script src="js-libs/jquery-ui.js"></script>
+
+    <script src="js-libs/select2.full.min.js"></script>
+    <link href="stylesheets/select2.min.css" rel="stylesheet">
 
     <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
     <link href="stylesheets/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/41234.7.0/css/font-awesome.min.css">
     <link href="stylesheets/global.css" rel="stylesheet">
 
     <script type="text/javascript">
@@ -32,10 +37,24 @@
 
 
         document.onreadystatechange = () => {
+            $("select").select2();
+            $( function() {
+                $( "#images-section").sortable();
+            } );
             document.getElementById("my-alert").style.display = "none";
             document.getElementsByClassName("loader-container")[0].style.display = "none";
             document.getElementById("post-specification-id=<%=id%>").classList.add('active');
         };
+        function getImageByNewSort(){
+            var list = [];
+            var childres = document.getElementById("images-section").children;
+           
+            for (let i = 0; i < childres.length; i++){
+                console.log(childres[i].children[1].getAttribute("data"));
+                list.push(childres[i].children[1].getAttribute("data"));
+            }
+            return list;
+        }
         function save() {
             var can_add=true;
 
@@ -109,11 +128,12 @@
                     "slug":document.getElementById("slug-i").value,
                     "price":document.getElementById("price-i").value,
                     "regular_price":document.getElementById("regular_price-i").value,
-                    "images":images,
+                    "images":getImageByNewSort(),
                     "availability":document.getElementById("availability-i").value,
                     "description":document.getElementById("desc-i").value,
                     "meta_title":document.getElementById("meta_title-i").value,
                     "meta_description":document.getElementById("meta_description-i").value,
+                    "position":document.getElementById("position-i").value,
                 });
 
                 var requestOptions = {
@@ -159,25 +179,20 @@
         }
 
         function delete_photo(value) {
-            for(var i =0 ;i<images.length;i++){
-                if(images[i]==value.getAttribute("data")){
-                    images.splice(i,1);
-                    value.remove();
-                    return;
-                }
-            }
+            document.getElementById(value).remove();
         }
 
         function hover(value) {
-            var temp = value.getAttribute("delete");
-            value.setAttribute("delete",value.getAttribute("src"));
-            value.setAttribute("src",temp);
+            value.firstChild.style.display = "block"
+        }
+        function unHover(value) {
+            value.firstChild.style.display = "none"
         }
 
         function add_photos() {
             $.each($('#multi-upload-image')[0].files, function (i, file) {
                 var newName=Date.now()+file.name;
-                document.getElementById("images-section").innerHTML= document.getElementById("images-section").innerHTML+"<img  onmouseover='hover(this);' onmouseout='hover(this);' delete='"+location.protocol+'//' + location.host+"/images/delete.png"+"' onclick='delete_photo(this)' data='"+location.protocol+'//' + location.host+"/uploads/"+newName+"' class='added-image' src='"+URL.createObjectURL(file)+"'>";
+                document.getElementById("images-section").innerHTML= document.getElementById("images-section").innerHTML+"<div id='"+newName+"' onmouseover='hover(this);' onmouseout='unHover(this);' class='added-image-container'><img class='float-delete' width='20' onclick='delete_photo(\""+newName+"\")' src='images/delete.png'><img data='"+location.protocol+'//' + location.host+"/uploads/"+newName+"' class='added-image' src='"+URL.createObjectURL(file)+"'></div>";
                 images.push(location.protocol+'//' + location.host+"/uploads/"+newName);
                 form.append('profile-files', file,newName);
             });
@@ -359,6 +374,10 @@
             <br>
             <br>
 
+            <label class="form-label" id="position-l">Position</label>
+            <input class="form-control" placeholder="please type a number value ex:42" type="number" id="position-i"/>
+            <br>
+            <br>
 
 
         </div>

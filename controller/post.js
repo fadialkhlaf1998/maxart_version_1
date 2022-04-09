@@ -3,7 +3,7 @@ const db_config = require("./db_config");
 
 function selectAll(id) {
     return new Promise((resolve, reject) => {
-        db_config.connection.query("select p.*,pt.name as post_type from post p inner join post_type pt on pt.id = p.post_type_id where p.company_id=?",[id],function (err,rows){
+        db_config.connection.query("select p.*,pt.name as post_type from post p inner join post_type pt on pt.id = p.post_type_id where p.company_id=? order by p.position ASC",[id],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -15,7 +15,7 @@ function selectAll(id) {
 
 function selectAllByPostType(post_type_id,id) {
     return new Promise((resolve, reject) => {
-        db_config.connection.query("select p.*,pt.name as post_type from post p inner join post_type pt on pt.id = p.post_type_id where p.post_type_id=? and p.company_id=?",[post_type_id,id],function (err,rows){
+        db_config.connection.query("select p.*,pt.name as post_type from post p inner join post_type pt on pt.id = p.post_type_id where p.post_type_id=? and p.company_id=? order by p.position ASC",[post_type_id,id],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -81,7 +81,7 @@ function delete_image(post_id) {
     });
 }
 
-function insert(company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,images,availability,meta_title,meta_description) {
+function insert(company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,images,availability,meta_title,meta_description,position) {
     return new Promise((resolve, reject) => {
         if(price){
 
@@ -98,7 +98,12 @@ function insert(company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_typ
         }else{
             availability = null;
         }
-        db_config.connection.query("insert into post (company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,availability,meta_title,meta_description) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,availability,meta_title,meta_description],function (err,rows){
+        if(position){
+
+        }else{
+            position = null;
+        }
+        db_config.connection.query("insert into post (company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,availability,meta_title,meta_description,position) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",[company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,availability,meta_title,meta_description,position],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -114,7 +119,7 @@ function insert(company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_typ
     });
 }
 
-function update(company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,images,availability,meta_title,meta_description,id) {
+function update(company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,images,availability,meta_title,meta_description,position,id) {
     return new Promise((resolve, reject) => {
         if(price){
 
@@ -131,8 +136,13 @@ function update(company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_typ
         }else{
             availability = null;
         }
+        if(position){
+
+        }else{
+            position = null;
+        }
         console.log(description)
-        var query =db_config.connection.query("update post set company_id=?,parent_1=?,parent_2=?,parent_3=?,parent_4=?,parent_5=?,post_type_id=?,publish=?,search=?,title=?,sub_title=?,image=?,sku=?,slug=?,price=?,regular_price=?,description=?,availability=?,meta_title=?,meta_description=? where id=?",[company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,availability,meta_title,meta_description,id],function (err,rows){
+        var query =db_config.connection.query("update post set company_id=?,parent_1=?,parent_2=?,parent_3=?,parent_4=?,parent_5=?,post_type_id=?,publish=?,search=?,title=?,sub_title=?,image=?,sku=?,slug=?,price=?,regular_price=?,description=?,availability=?,meta_title=?,meta_description=?,position=? where id=?",[company_id,parent_1,parent_2,parent_3,parent_4,parent_5,post_type_id,publish,search,title,sub_title,image,sku,slug,price,regular_price,description,availability,meta_title,meta_description,position,id],function (err,rows){
             if(err){
                 reject(err);
             }else {

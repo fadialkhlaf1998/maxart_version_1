@@ -52,7 +52,7 @@ function  post(){
             entity.insert(req.session.company_id,req.body.parent_1,req.body.parent_2,req.body.parent_3,
                 req.body.parent_4,req.body.parent_5,req.body.post_type_id,req.body.publish,req.body.search,
                 req.body.title,req.body.sub_title,req.body.image,req.body.sku,req.body.slug,req.body.price,req.body.regular_price,
-                req.body.description,req.body.images,req.body.availability,req.body.meta_title,req.body.meta_description).then(value => {
+                req.body.description,req.body.images,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position).then(value => {
                 res.status(200);
                 res.send(value);
                 res.end();
@@ -73,7 +73,7 @@ function  put(){
             entity.update(req.session.company_id,req.body.parent_1,req.body.parent_2,req.body.parent_3,
                 req.body.parent_4,req.body.parent_5,req.body.post_type_id,req.body.publish,req.body.search,
                 req.body.title,req.body.sub_title,req.body.image,req.body.sku,req.body.slug,req.body.price,req.body.regular_price,
-                req.body.description,req.body.images,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.id).then(value => {
+                req.body.description,req.body.images,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position,req.body.id).then(value => {
                 res.status(200);
                 res.send(value);
                 res.end();

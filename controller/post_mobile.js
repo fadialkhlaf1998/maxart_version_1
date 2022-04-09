@@ -4,7 +4,7 @@ const db_config = require("./db_config");
 function selectByPostType(post_type_id,customer_id,company_id) {
     return new Promise((resolve, reject) => {
         
-        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description ,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.post_type_id = ? and p.company_id =?",[customer_id,post_type_id,company_id],function (err,rows){
+        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description ,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.post_type_id = ? and p.company_id =? order by p.position ASC",[customer_id,post_type_id,company_id],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -54,7 +54,7 @@ function getRate(post_id) {
 
 function selectByParent1(parent_id,customer_id,company_id){
     return new Promise((resolve, reject) => {
-        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_1 = ? and p.company_id =?",[customer_id,parent_id,company_id],function (err,rows){
+        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_1 = ? and p.company_id =? order by p.position ASC",[customer_id,parent_id,company_id],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -69,7 +69,7 @@ function selectByParent2(parent_id,customer_id,company_id){
     return new Promise((resolve, reject) => {
         console.log(parent_id);
         console.log(company_id);
-        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_2 = ? and p.company_id =?",[customer_id,parent_id,company_id],function (err,rows){
+        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_2 = ? and p.company_id =? order by p.position ASC",[customer_id,parent_id,company_id],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -83,7 +83,7 @@ function selectByParent2(parent_id,customer_id,company_id){
 
 function selectByParent3(parent_id,company_id){
     return new Promise((resolve, reject) => {
-        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_3 = ? and p.company_id =?",[customer_id,parent_id,company_id],function (err,rows){
+        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_3 = ? and p.company_id =? order by p.position ASC",[customer_id,parent_id,company_id],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -96,7 +96,7 @@ function selectByParent3(parent_id,company_id){
 }
 function selectByParent4(parent_id,company_id){
     return new Promise((resolve, reject) => {
-        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_4 = ? and p.company_id =?",[customer_id,parent_id,company_id],function (err,rows){
+        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_4 = ? and p.company_id =? order by p.position ASC",[customer_id,parent_id,company_id],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -110,7 +110,7 @@ function selectByParent4(parent_id,company_id){
 
 function selectByParent5(parent_id,company_id){
     return new Promise((resolve, reject) => {
-        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_5 = ? and p.company_id =?",[customer_id,parent_id,company_id],function (err,rows){
+        db_config.connection.query("select p.*,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and w.customer_id = ?) as wishlist from post p where p.parent_5 = ? and p.company_id =? order by p.position ASC",[customer_id,parent_id,company_id],function (err,rows){
             if(err){
                 reject(err);
             }else {
@@ -149,7 +149,7 @@ function selectById(id,customer_id,company_id){
 
 function search(query,post_type_id,customer_id,company_id){
     return new Promise((resolve, reject) => {
-        db_config.connection.query("select p.* ,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and customer_id = ?) as wishlist from post p where p.post_type_id = ? and p.company_id =? and (p.title like ? or p.search like ?)",[customer_id,post_type_id,company_id,'%'+query+'%','%'+query+'%'],function (err,rows){
+        db_config.connection.query("select p.* ,CONVERT(p.description USING utf8) as string_description,(select count(*) from wishlist w where w.post_id = p.id and customer_id = ?) as wishlist from post p where p.post_type_id = ? and p.company_id =? and (p.title like ? or p.search like ?) order by p.position ASC",[customer_id,post_type_id,company_id,'%'+query+'%','%'+query+'%'],function (err,rows){
             if(err){
                 reject(err);
             }else {

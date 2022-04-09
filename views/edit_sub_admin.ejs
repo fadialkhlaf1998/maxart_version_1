@@ -12,6 +12,8 @@
     <script src="js-libs/jquery.dataTables.min.js"></script>
     <script src="javascripts/global.js"></script>
 
+    <script src="js-libs/select2.full.min.js"></script>
+    <link rel="stylesheet" href="stylesheets/select2.min.css">
 
     <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
     <link href="stylesheets/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -20,6 +22,7 @@
 
     <script>
         document.onreadystatechange = () => {
+            $("select").select2();
             document.getElementById("my-alert").style.display = "none";
             document.getElementsByClassName("loader-container")[0].style.display = "none";
             document.getElementById("sub-admin").classList.add('active');
