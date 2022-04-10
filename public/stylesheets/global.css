@@ -198,6 +198,9 @@ th{
     border-radius: 3px;
     margin: 20px;
 }
+.btn-primary{
+    background-image: linear-gradient(#A5E400, #6EAD00);
+}
 .submit-btn:hover{
     background-image: linear-gradient(#ffffff, #dddddd);
     color: #6EAD00;
@@ -214,6 +217,9 @@ th{
     cursor: pointer;
     border-radius: 3px;
     margin: 20px;
+}
+.btn-secondary{
+    background-color: red;
 }
 .cancel-btn:hover{
     background-image: linear-gradient(#ffffff, #dddddd);
@@ -391,4 +397,7 @@ table th {
     .left-item{
         font-size: 30px;
     }
+}
+.black-opacity{
+    background: rgba(0, 0, 0, 0.5);
 }

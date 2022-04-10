@@ -53,6 +53,7 @@
             document.getElementById("post").classList.add('active');
             
         };
+        
         function getImageByNewSort(){
             var list = [];
             var childres = document.getElementById("images-section").children;
@@ -64,8 +65,8 @@
             return list;
         }
         function save() {
-            var can_add=true;
-
+            var can_add=false;
+            console.log();
             var e1 = document.getElementById("select-post_type");
             var post_type_id = e1.value;
             if(post_type_id==-1){
@@ -401,14 +402,14 @@
             <br>
             <br>
 
+      
+
+
 
         </div>
     </div>
 </div>
 
-<script>
-
-</script>
 
 
 

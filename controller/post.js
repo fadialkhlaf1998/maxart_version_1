@@ -176,6 +176,62 @@ function _delete(company_id,id) {
         })
     });
 }
+function selectJsonDataByPostId(id) {
+    return new Promise((resolve, reject) => {
+        db_config.connection.query("select CONVERT(data USING utf8) as data,id,position from json_data where post_id = ? order by position ASC",[id],function (err,rows){
+            if(err){
+                reject(err);
+            }else {
+                resolve(rows);
+            }
+        })
+    });
+}
+
+function insertJsonDataByPostId(id,position,data) {
+    return new Promise((resolve, reject) => {
+        if(position){
+
+        }else{
+            position=null;
+        }
+        db_config.connection.query("insert into json_data (post_id,position,data) values (?,?,?)",[id,position,data],function (err,rows){
+            if(err){
+                reject(err);
+            }else {
+                resolve(rows);
+            }
+        })
+    });
+}
+function updatetJsonDataByPostId(post_id,position,data,id) {
+    return new Promise((resolve, reject) => {
+        if(position){
+
+        }else{
+            position=null;
+        }
+        db_config.connection.query("update json_data set post_id=?,position=?,data=? where id=?",[post_id,position,data,id],function (err,rows){
+            if(err){
+                reject(err);
+            }else {
+                resolve(rows);
+            }
+        })
+    });
+}
+function deleteJsonDataByPostId(id) {
+    return new Promise((resolve, reject) => {
+    
+        db_config.connection.query("delete from json_data where id=?",[id],function (err,rows){
+            if(err){
+                reject(err);
+            }else {
+                resolve(rows);
+            }
+        })
+    });
+}
 
 module.exports={
     "selectAll": selectAll,
@@ -184,4 +240,8 @@ module.exports={
     "_delete":_delete,
     "selectByid":selectByid,
     "selectAllByPostType":selectAllByPostType,
+    "selectJsonDataByPostId":selectJsonDataByPostId,
+    "insertJsonDataByPostId":insertJsonDataByPostId,
+    "updatetJsonDataByPostId":updatetJsonDataByPostId,
+    "deleteJsonDataByPostId":deleteJsonDataByPostId,
 }

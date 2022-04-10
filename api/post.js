@@ -109,6 +109,88 @@ function  _delete(){
     });
 }
 
+function selectJsonDataByPostId() {
+    return app.get('/api/json-data',function (req,res){
+        if(req.session.username&&req.session.role=="sub_admin"){
+            var url_parts = url.parse(req.url, true);
+            var query = url_parts.query;
+            entity.selectJsonDataByPostId(query.id).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
+            }).catch(err =>{
+                console.log(err);
+                res.status(500);
+                res.send(err);
+                res.end();
+            });
+        }else {
+            res.redirect("/");
+        }
+
+    });
+}
+function insertJsonDataByPostId() {
+    return app.post('/api/json-data',function (req,res){
+        if(req.session.username&&req.session.role=="sub_admin"){
+            entity.insertJsonDataByPostId(req.body.post_id,req.body.position,req.body.data).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
+            }).catch(err =>{
+                console.log(err);
+                res.status(500);
+                res.send(err);
+                res.end();
+            });
+        }else {
+            res.redirect("/");
+        }
+
+    });
+}
+
+function updatetJsonDataByPostId() {
+    return app.put('/api/json-data',function (req,res){
+        if(req.session.username&&req.session.role=="sub_admin"){
+            entity.updatetJsonDataByPostId(req.body.post_id,req.body.position,req.body.data,req.body.id).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
+            }).catch(err =>{
+                console.log(err);
+                res.status(500);
+                res.send(err);
+                res.end();
+            });
+        }else {
+            res.redirect("/");
+        }
+
+    });
+}
+
+function deleteJsonDataByPostId() {
+    return app.delete('/api/json-data',function (req,res){
+        if(req.session.username&&req.session.role=="sub_admin"){
+            entity.deleteJsonDataByPostId(req.body.id).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
+            }).catch(err =>{
+                console.log(err);
+                res.status(500);
+                res.send(err);
+                res.end();
+            });
+        }else {
+            res.redirect("/");
+        }
+
+    });
+}
+
+
 function viewPage() {
     return app.get('/post',function (req,res){
         if(req.session.username&&req.session.role=="sub_admin"){
@@ -227,4 +309,8 @@ module.exports={
     "editPageSpecification":editPageSpecification,
     "getSpecification":getSpecification,
     "help":help,
+    "selectJsonDataByPostId":selectJsonDataByPostId,
+    "insertJsonDataByPostId":insertJsonDataByPostId,
+    "updatetJsonDataByPostId":updatetJsonDataByPostId,
+    "deleteJsonDataByPostId":deleteJsonDataByPostId,
 }
