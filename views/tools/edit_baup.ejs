@@ -11,7 +11,6 @@
     <script src="js-libs/dataTables.bootstrap5.min.js"></script>
     <script src="js-libs/jquery.dataTables.min.js"></script>
     <script src="javascripts/global.js"></script>
-    <script src="js-libs/jquery-3.6.0.js"></script>
     <script src="js-libs/jquery-ui.js"></script>
 
     <script src="js-libs/select2.full.min.js"></script>
@@ -19,14 +18,9 @@
 
     <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
     <link href="stylesheets/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/41234.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="stylesheets/global.css" rel="stylesheet">
-
-
- 
-    <script>
-  
-    </script>
+    <link href="stylesheets/popup.css" rel="stylesheet">
 
     <script type="text/javascript">
 
@@ -43,39 +37,33 @@
 
 
         document.onreadystatechange = () => {
-            
             $("select").select2();
             $( function() {
                 $( "#images-section").sortable();
             } );
             document.getElementById("my-alert").style.display = "none";
             document.getElementsByClassName("loader-container")[0].style.display = "none";
-            document.getElementById("post").classList.add('active');
+            document.getElementById("post-specification-id=<%=id%>").classList.add('active');
+            images=[];
+            document.getElementById("my-alert").style.display = "none";
+            main_image="<%=data.image%>";
+            console.log(main_image);
+            if(main_image.length==0||main_image==null){
+            }else{
+                document.getElementById("main-image-section").innerHTML="<img class='added-image' src='"+"<%=data.image%>"+"'>";
+            }
+            document.getElementById("images-section").innerHTML="";
+            <%data.images.forEach(value=>{%>
+            images.push("<%=value.link%>");
+            document.getElementById("images-section").innerHTML = document.getElementById("images-section").innerHTML + "<div id='"+"<%=value.link%>"+"' onmouseover='hover(this);' onmouseout='unHover(this);' class='added-image-container'><img class='float-delete' width='20' onclick='delete_photo(\""+"<%=value.link%>"+"\")' src='images/delete.png'><img data='"+"<%=value.link%>"+"' class='added-image' src='"+"<%=value.link%>"+"'></div>"
+            <%})%>
             
         };
-        
-        function getImageByNewSort(){
-            var list = [];
-            var childres = document.getElementById("images-section").children;
-           
-            for (let i = 0; i < childres.length; i++){
-                console.log(childres[i].children[1].getAttribute("data"));
-                list.push(childres[i].children[1].getAttribute("data"));
-            }
-            return list;
-        }
         function save() {
-            var can_add=false;
-            console.log();
-            var e1 = document.getElementById("select-post_type");
-            var post_type_id = e1.value;
-            if(post_type_id==-1){
-                can_add=false;
-                color_red("post_type-l");
-            }else{
-                color_black("post_type-l");
-            }
+            var can_add=true;
 
+
+            var post_type_id = "<%=id%>";
             var e2 = document.getElementById("select-parent_1");
             var parent_1 = e2.value;
             if(parent_1==-1){
@@ -117,9 +105,6 @@
             }else{
                 color_black("title-l");
             }
-            if(main_image==""){
-                main_image=null;
-            }
 
             if(can_add){
                 document.getElementsByClassName("loader-container")[0].style.display = "flex";
@@ -143,17 +128,18 @@
                     "price":document.getElementById("price-i").value,
                     "regular_price":document.getElementById("regular_price-i").value,
                     "images":getImageByNewSort(),
-                    "availability":document.getElementById("availability-i").value,
                     "description":document.getElementById("desc-i").value,
+                    "availability":document.getElementById("availability-i").value,
                     "meta_title":document.getElementById("meta_title-i").value,
                     "meta_description":document.getElementById("meta_description-i").value,
                     "position":document.getElementById("position-i").value,
                     "locale":"en",
                     "language_parent":null,
+                    "id":document.getElementById("title-i").getAttribute("data-id"),
                 });
 
                 var requestOptions = {
-                    method: 'POST',
+                    method: 'PUT',
                     headers: myHeaders,
                     body: raw,
                     redirect: 'follow'
@@ -174,7 +160,7 @@
 
                             $.ajax(settings).done(function (response) {
                                 document.getElementsByClassName("loader-container")[0].style.display = "none";
-                                window.location = '/post';
+                                window.location = '/post-specification?id=<%=id%>';
                             });
 
 
@@ -183,7 +169,6 @@
                                 document.getElementsByClassName("loader-container")[0].style.display = "none";
                                 document.getElementById("my-alert").innerText = result;
                                 document.getElementById("my-alert").style.display = "block";
-                                document.getElementById('my-alert').scrollIntoView();
                             })
                         }
                     })
@@ -191,11 +176,21 @@
                         document.getElementsByClassName("loader-container")[0].style.display = "none";
                         document.getElementById("my-alert").innerText = "some thing went wrong";
                         document.getElementById("my-alert").style.display = "block";
-                        document.getElementById('my-alert').scrollIntoView();
                     });
             }
         }
 
+        function getImageByNewSort(){
+            var list = [];
+            var childres = document.getElementById("images-section").children;
+           
+            for (let i = 0; i < childres.length; i++){
+                console.log(childres[i].children[1].getAttribute("data"));
+                list.push(childres[i].children[1].getAttribute("data"));
+            }
+            return list;
+        }
+        
         function delete_photo(value) {
             document.getElementById(value).remove();
         }
@@ -207,7 +202,6 @@
             value.firstChild.style.display = "none"
         }
 
-
         function add_photos() {
             $.each($('#multi-upload-image')[0].files, function (i, file) {
                 var newName=Date.now()+file.name;
@@ -215,7 +209,6 @@
                 images.push(location.protocol+'//' + location.host+"/uploads/"+newName);
                 form.append('profile-files', file,newName);
             });
-
         }
         function add_photo() {
             $.each($('#upload-image')[0].files, function (i, file) {
@@ -231,6 +224,9 @@
         function change_meta_description(){
             var text = document.getElementById("meta_description-i").value;
             document.getElementById("counter").innerHTML="Meta Description length: "+text.length;
+        }
+        function test(){
+           console.log("****")
         }
     </script>
 
@@ -253,12 +249,12 @@
         <div class="dt-container">
 
             <label class="form-label" id="title-l">Title</label>
-            <input class="form-control" type="text" id="title-i"/>
+            <input data-id="<%=data.id%>" class="form-control" value="<%=data.title%>" type="text" id="title-i"/>
             <br>
             <br>
 
             <label class="form-label" id="sub_title-l">Sub Title</label>
-            <input class="form-control" type="text" id="sub_title-i"/>
+            <input class="form-control" type="text" value="<%=data.sub_title%>" id="sub_title-i"/>
             <br>
             <br>
 
@@ -273,47 +269,40 @@
             </div>
             <br>
             <br>
-            
-            <label class="form-label" id="post_type-l">Post Type</label>
-            <select id="select-post_type"  class="form-select" aria-label="Default select example"  >
-                <option value="-1" selected>Open this select menu</option>
-                <%post_type.forEach(value=>{%>
-                <option value="<%=value.id%>"><%=value.name%></option>
-                <%})%>
-            </select>
-            <br>
-            <br>
 
             <label class="form-label" id="desc-l">Description</label>
-            <textarea  class="form-control" style="min-height: 200px;" type="text" id="desc-i"></textarea>
+            <textarea  class="form-control" style="min-height: 200px;" type="text" id="desc-i"><%=data.description%></textarea>
             <br>
             <br>
-
-            
 
             <label class="form-label" id="search-l">Search</label>
-            <input class="form-control" placeholder="Key Words for search" type="text" id="search-i"/>
+            <input class="form-control" value="<%=data.search%>" placeholder="Key Words for search" type="text" id="search-i"/>
             <br>
             <br>
 
             <label class="form-label" id="price-l">Price</label>
-            <input class="form-control" placeholder="Please enter by this form ex: 4200.00" type="text" id="price-i"/>
+            <input class="form-control" value="<%=data.price%>" placeholder="Please enter by this form ex: 4200.00" type="text" id="price-i"/>
             <br>
             <br>
 
             <label class="form-label" id="regular_price-l">Regular Price</label>
-            <input class="form-control" placeholder="Please enter by this form ex: 4200.00" type="text" id="regular_price-i"/>
+            <input class="form-control" value="<%=data.regular_price%>" placeholder="Please enter by this form ex: 4200.00" type="text" id="regular_price-i"/>
             <br>
             <br>
 
             <label class="form-label" id="availability-l">Availability</label>
-            <input class="form-control" placeholder="Please enter by this form ex: 500" type="text" id="availability-i"/>
+            <input class="form-control"  value="<%=data.availability%>" placeholder="Please enter by this form ex: 500" type="text" id="availability-i"/>
             <br>
             <br>
 
 
             <label class="form-label" id="active-l">Publish</label>
-            <input type="checkbox" style="margin-left: 10px;" id="active-i" checked/>
+            <%if(data.publish==1){%>
+                <input type="checkbox" style="margin-left: 10px;" id="active-i" checked/>
+            <%}else{%>
+                <input type="checkbox" style="margin-left: 10px;" id="active-i"/>
+            <%}%>
+            
             <br>
             <br>
 
@@ -334,7 +323,14 @@
             <select id="select-parent_1"  class="form-select" aria-label="Default select example"  >
                 <option value="-1" selected>Open this select menu</option>
                 <%post.forEach(value=>{%>
-                <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+
+                    <%if(data.parent_1==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>
+
+                
                 <%})%>
             </select>
             <br>
@@ -344,7 +340,12 @@
             <select id="select-parent_2"  class="form-select" aria-label="Default select example"  >
                 <option value="-1" selected>Open this select menu</option>
                 <%post.forEach(value=>{%>
-                <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+
+                    <%if(data.parent_2==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>
                 <%})%>
             </select>
             <br>
@@ -354,7 +355,11 @@
             <select id="select-parent_3"  class="form-select" aria-label="Default select example"  >
                 <option value="-1" selected>Open this select menu</option>
                 <%post.forEach(value=>{%>
-                <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%if(data.parent_3==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>
                 <%})%>
             </select>
             <br>
@@ -364,8 +369,11 @@
             <select id="select-parent_4"  class="form-select" aria-label="Default select example"  >
                 <option value="-1" selected>Open this select menu</option>
                 <%post.forEach(value=>{%>
-                <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
-                <%})%>
+                    <%if(data.parent_4==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>                <%})%>
             </select>
             <br>
             <br>
@@ -374,46 +382,49 @@
             <select id="select-parent_5"  class="form-select" aria-label="Default select example"  >
                 <option value="-1" selected>Open this select menu</option>
                 <%post.forEach(value=>{%>
-                <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
-                <%})%>
+                    <%if(data.parent_5==value.id){%>
+                        <option selected value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}else{%>
+                        <option value="<%=value.id%>"><%=value.title + " | " + value.post_type%></option>
+                    <%}%>                <%})%>
             </select>
             <br>
             <br>
 
             <label class="form-label" id="sku-l">SKU</label>
-            <input class="form-control" type="text" id="sku-i"/>
+            <input class="form-control" value="<%=data.sku%>" type="text" id="sku-i"/>
             <br>
             <br>
 
             <label class="form-label" id="slug-l">Slug</label>
-            <input class="form-control" type="text" id="slug-i"/>
+            <input class="form-control" value="<%=data.slug%>" type="text" id="slug-i"/>
             <br>
             <br>
-       
+
             <label class="form-label" id="meta_title-l">Meta Title</label>
-            <input class="form-control" type="text" id="meta_title-i"/>
+            <input class="form-control" type="text" value="<%=data.meta_title%>" id="meta_title-i"/>
             <br>
             <br>
 
             <label class="form-label" id="meta_description-l">Meta Description</label>
-            <input oninput="change_meta_description()" class="form-control" type="text" id="meta_description-i"/>
-            <div id="counter"></div>
+            <input onwaiting="test()" oninput="change_meta_description()" class="form-control" value="<%=data.meta_description%>" type="text" id="meta_description-i"/>
+            <div id="counter">Meta Description length: <%=data.meta_description!=null?data.meta_description.length:0%></div>
             <br>
             <br>
 
             <label class="form-label" id="position-l">Position</label>
-            <input class="form-control" placeholder="please type a number value ex:42" type="number" id="position-i"/>
+            <input class="form-control" placeholder="please type a number value ex:42" value="<%=data.position%>" type="number" id="position-i"/>
             <br>
             <br>
-
-      
-
 
 
         </div>
     </div>
 </div>
 
+<script>
+
+</scrip>
 
 
 

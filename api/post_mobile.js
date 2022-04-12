@@ -28,11 +28,9 @@ function  post_type_mobile(){
             post_type.selectAll(req.session.company_id).then(value => {
             var obj = new Object();
             obj.post_types = value;
-            make_translate(req.body.locale,obj).then(result=>{
                 res.status(200);
-                res.send(result);
+                res.send(value);
                 res.end();
-            });
             
         }).catch(err =>{
             res.status(500);
@@ -50,12 +48,11 @@ function  post_type_mobile(){
 function  selectById(){
     return app.post('/api/post-by-id', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.selectById(req.body.id,req.body.customer_id,req.session.company_id).then(value => {
-            make_translate(req.body.locale,value).then(result=>{
+            post_mobile.selectById(req.body.id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
                 res.status(200);
-                res.send(result);
+                res.send(value);
                 res.end();
-            });
+            
         }).catch(err =>{
             res.status(500);
             res.send(err);
@@ -71,12 +68,11 @@ function  selectById(){
 function  selectByParent1(){
     return app.post('/api/post-by-parent-1', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.selectByParent1(req.body.parent_id,req.body.customer_id,req.session.company_id).then(value => {
-                make_translate(req.body.locale,value).then(result=>{
+            post_mobile.selectByParent1(req.body.parent_id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
                     res.status(200);
-                    res.send(result);
+                    res.send(value);
                     res.end();
-                });
+                
         }).catch(err =>{
             res.status(500);
             res.send(err);
@@ -92,12 +88,11 @@ function  selectByParent1(){
 function  selectByPostType(){
     return app.post('/api/post-by-post-type', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.selectByPostType(req.body.id,req.body.customer_id,req.session.company_id).then(value => {
-                make_translate(req.body.locale,value).then(result=>{
+            post_mobile.selectByPostType(req.body.id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
                     res.status(200);
-                    res.send(result);
+                    res.send(value);
                     res.end();
-                });
+                
         }).catch(err =>{
             res.status(500);
             res.send(err);
@@ -113,12 +108,10 @@ function  selectByPostType(){
 function  selectByParent2(){
     return app.post('/api/post-by-parent-2', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.selectByParent2(req.body.parent_id,req.body.customer_id,req.session.company_id).then(value => {
-                make_translate(req.body.locale,value).then(result=>{
-                    res.status(200);
-                    res.send(result);
-                    res.end();
-                });
+            post_mobile.selectByParent2(req.body.parent_id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
         }).catch(err =>{
             res.status(500);
             res.send(err);
@@ -134,12 +127,10 @@ function  selectByParent2(){
 function  selectByParent3(){
     return app.post('/api/post-by-parent-3', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.selectByParent3(req.body.parent_id,req.body.customer_id,req.session.company_id).then(value => {
-                make_translate(req.body.locale,value).then(result=>{
-                    res.status(200);
-                    res.send(result);
-                    res.end();
-                });
+            post_mobile.selectByParent3(req.body.parent_id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
         }).catch(err =>{
             res.status(500);
             res.send(err);
@@ -155,12 +146,10 @@ function  selectByParent3(){
 function  selectByParent4(){
     return app.post('/api/post-by-parent-4', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.selectByParent4(req.body.parent_id,req.body.customer_id,req.session.company_id).then(value => {
-                make_translate(req.body.locale,value).then(result=>{
-                    res.status(200);
-                    res.send(result);
-                    res.end();
-                });
+            post_mobile.selectByParent4(req.body.parent_id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
         }).catch(err =>{
             res.status(500);
             res.send(err);
@@ -176,12 +165,10 @@ function  selectByParent4(){
 function  selectByParent5(){
     return app.post('/api/post-by-parent-5', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.selectByParent5(req.body.parent_id,req.body.customer_id,req.session.company_id).then(value => {
-                make_translate(req.body.locale,value).then(result=>{
-                    res.status(200);
-                    res.send(result);
-                    res.end();
-                });
+            post_mobile.selectByParent5(req.body.parent_id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
         }).catch(err =>{
             res.status(500);
             res.send(err);
@@ -197,12 +184,10 @@ function  selectByParent5(){
 function  selectByParent5(){
     return app.post('/api/post-by-parent-5', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.selectByParent5(req.body.parent_id,req.body.customer_id,req.session.company_id).then(value => {
-                make_translate(req.body.locale,value).then(result=>{
-                    res.status(200);
-                    res.send(result);
-                    res.end();
-                });
+            post_mobile.selectByParent5(req.body.parent_id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
         }).catch(err =>{
             res.status(500);
             res.send(err);
@@ -219,12 +204,10 @@ function  selectByParent5(){
 function  search(){
     return app.post('/api/post-search', (req, res, next) => {
         if(req.session.role=="user"){
-            post_mobile.search(req.body.query,req.body.post_type_id,req.body.customer_id,req.session.company_id).then(value => {
-                make_translate(req.body.locale,value).then(result=>{
-                    res.status(200);
-                    res.send(result);
-                    res.end();
-                });
+            post_mobile.search(req.body.query,req.body.post_type_id,req.body.customer_id,req.session.company_id,req.body.locale).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
         }).catch(err =>{
             res.status(500);
             res.send(err);

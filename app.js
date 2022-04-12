@@ -27,6 +27,7 @@ var file_writer = require("./api/file_writer");
 var post_mobile = require("./api/post_mobile");
 var customer = require("./api/customer");
 var wishlist = require("./api/wishlist");
+var order = require("./api/order");
 
 
 const sessions = require('express-session');
@@ -145,6 +146,11 @@ app.use(post.insertJsonDataByPostId());
 app.use(post.selectJsonDataByPostId());
 app.use(post.updatetJsonDataByPostId());
 app.use(post.deleteJsonDataByPostId());
+app.use(post.addPostLanguagePage());
+app.use(post.postLanguage());
+app.use(post.editPostLanguagePage());
+app.use(post.putLanguage());
+app.use(post.selectPostLanguage());
 app.use(post.addPageSpecification());
 app.use(post.editPageSpecification());
 app.use(post.viewPageSpecification());
@@ -190,6 +196,15 @@ app.use(disccount_code.addPage());
 app.use(disccount_code.viewPage());
 app.use(disccount_code.editPage());
 app.use(disccount_code.checkCode());
+
+app.use(order.viewPage());
+app.use(order.post());
+app.use(order.get());
+app.use(order.deliver());
+app.use(order.refuse());
+app.use(order.getLineItems());
+app.use(order.ViewLineItemsPage());
+app.use(order.selectCustomerOrders());
 
 var multer_2  = require('multer');
 var storage_2 = multer_2.diskStorage({

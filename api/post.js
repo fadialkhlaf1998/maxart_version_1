@@ -1,6 +1,7 @@
 var express = require('express');
 var entity = require('../controller/post');
 var post_type = require('../controller/post_type');
+var languages = require('../controller/languages');
 const url = require("url");
 var app = express();
 
@@ -52,7 +53,50 @@ function  post(){
             entity.insert(req.session.company_id,req.body.parent_1,req.body.parent_2,req.body.parent_3,
                 req.body.parent_4,req.body.parent_5,req.body.post_type_id,req.body.publish,req.body.search,
                 req.body.title,req.body.sub_title,req.body.image,req.body.sku,req.body.slug,req.body.price,req.body.regular_price,
-                req.body.description,req.body.images,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position).then(value => {
+                req.body.description,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position,
+                req.body.locale,req.body.language_parent).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
+            }).catch(err =>{
+                res.status(500);
+                res.send(err.sqlMessage);
+                res.end();
+            });
+        }else{
+            res.redirect("/");
+        }
+    });
+}
+function  postLanguage(){
+    return app.post('/api/post-language', (req, res, next) => {
+        if(req.session.role=="sub_admin"){
+            entity.insertLanguage(req.session.company_id,req.body.parent_1,req.body.parent_2,req.body.parent_3,
+                req.body.parent_4,req.body.parent_5,req.body.post_type_id,req.body.publish,req.body.search,
+                req.body.title,req.body.sub_title,req.body.image,req.body.sku,req.body.slug,req.body.price,req.body.regular_price,
+                req.body.description,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position,
+                req.body.locale,req.body.language_parent,req.body.json_data).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
+            }).catch(err =>{
+                res.status(500);
+                res.send(err.sqlMessage);
+                res.end();
+            });
+        }else{
+            res.redirect("/");
+        }
+    });
+}
+function  putLanguage(){
+    return app.post('/api/post-language', (req, res, next) => {
+        if(req.session.role=="sub_admin"){
+            entity.updateLanguage(req.session.company_id,req.body.parent_1,req.body.parent_2,req.body.parent_3,
+                req.body.parent_4,req.body.parent_5,req.body.post_type_id,req.body.publish,req.body.search,
+                req.body.title,req.body.sub_title,req.body.image,req.body.sku,req.body.slug,req.body.price,req.body.regular_price,
+                req.body.description,req.body.images,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position,
+                req.body.locale,req.body.json_data,req.body.id).then(value => {
                 res.status(200);
                 res.send(value);
                 res.end();
@@ -67,13 +111,66 @@ function  post(){
     });
 }
 
+
+
+function selectPostLanguage() {
+    return app.get('/api/post-language',function (req,res){
+        if(req.session.username&&req.session.role=="sub_admin"){
+            var url_parts = url.parse(req.url, true);
+            var query = url_parts.query;
+            entity.selectPostLanguage(query.id).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
+            }).catch(err =>{
+                console.log(err);
+                res.status(500);
+                res.send(err);
+                res.end();
+            });
+        }else {
+            res.redirect("/");
+        }
+
+    });
+}
+
+
+
+
 function  put(){
     return app.put('/api/post', (req, res, next) => {
         if(req.session.role=="sub_admin"){
             entity.update(req.session.company_id,req.body.parent_1,req.body.parent_2,req.body.parent_3,
                 req.body.parent_4,req.body.parent_5,req.body.post_type_id,req.body.publish,req.body.search,
                 req.body.title,req.body.sub_title,req.body.image,req.body.sku,req.body.slug,req.body.price,req.body.regular_price,
-                req.body.description,req.body.images,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position,req.body.id).then(value => {
+                req.body.description,req.body.images,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position,
+                req.body.id).then(value => {
+                res.status(200);
+                res.send(value);
+                res.end();
+            }).catch(err =>{
+                res.status(500);
+                res.send(err);
+                res.end();
+            });
+        }else{
+            res.redirect("/");
+        }
+        
+    });
+}
+
+function  putLanguage(){
+    return app.put('/api/post-language', (req, res, next) => {
+        if(req.session.role=="sub_admin"){
+            console.log(req.body.id)
+            console.log(req.body.json_data)
+            entity.updateLanguage(req.session.company_id,req.body.parent_1,req.body.parent_2,req.body.parent_3,
+                req.body.parent_4,req.body.parent_5,req.body.post_type_id,req.body.publish,req.body.search,
+                req.body.title,req.body.sub_title,req.body.image,req.body.sku,req.body.slug,req.body.price,req.body.regular_price,
+                req.body.description,req.body.availability,req.body.meta_title,req.body.meta_description,req.body.position,
+                req.body.locale,req.body.json_data,req.body.id).then(value => {
                 res.status(200);
                 res.send(value);
                 res.end();
@@ -285,6 +382,42 @@ function editPageSpecification() {
     });
 }
 
+function addPostLanguagePage() {
+    return app.get('/add-post-language',function (req,res){
+        if(req.session.username&&req.session.role=="sub_admin"){
+            var url_parts = url.parse(req.url, true);
+            var query = url_parts.query;
+            entity.selectByid(req.session.company_id,query.id).then(function (rows) {
+                languages.selectAll().then(langs=>{
+                        res.render("add_post_language",{data:rows[0],types:req.session.types,id:query.type_id,languages:langs});
+                })
+               
+            });
+        }else {
+            res.redirect("/");
+        }
+
+    });
+}
+
+function editPostLanguagePage() {
+    return app.get('/edit-post-language',function (req,res){
+        if(req.session.username&&req.session.role=="sub_admin"){
+            var url_parts = url.parse(req.url, true);
+            var query = url_parts.query;
+            entity.selectByid(req.session.company_id,query.id).then(function (rows) {
+                languages.selectAll().then(langs=>{
+                        res.render("edit_post_language",{data:rows[0],types:req.session.types,id:query.type_id,languages:langs});
+                })
+            });
+        }else {
+            res.redirect("/");
+        }
+
+    });
+}
+
+
 function help() {
     return app.get('/maxart-help',function (req,res){
         if(req.session.username&&req.session.role=="sub_admin"){
@@ -313,4 +446,9 @@ module.exports={
     "insertJsonDataByPostId":insertJsonDataByPostId,
     "updatetJsonDataByPostId":updatetJsonDataByPostId,
     "deleteJsonDataByPostId":deleteJsonDataByPostId,
+    "addPostLanguagePage":addPostLanguagePage,
+    "postLanguage":postLanguage,
+    "selectPostLanguage":selectPostLanguage,
+    "editPostLanguagePage":editPostLanguagePage,
+    "putLanguage":putLanguage,
 }

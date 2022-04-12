@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Edit Post Language</title>
+
+    <script src="js-libs/jquery-3.5.1.js"></script>
+    <script src="js-libs/dataTables.bootstrap5.min.js"></script>
+    <script src="js-libs/jquery.dataTables.min.js"></script>
+    <script src="javascripts/global.js"></script>
+    <script src="js-libs/jquery-ui.js"></script>
+
+    <script src="js-libs/select2.full.min.js"></script>
+    <link href="stylesheets/select2.min.css" rel="stylesheet">
+
+    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="stylesheets/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="stylesheets/global.css" rel="stylesheet">
+    <link href="stylesheets/popup.css" rel="stylesheet">
+
+    <script>
+        var form = new FormData();
+        var main_image = null;
+
+
+        document.onreadystatechange = () => {
+            $("select").select2();
+            $( function() {
+                $( "#images-section").sortable();
+            } );
+            $('#myModal').on('shown.bs.modal', function () {
+              $('#myInput').trigger('focus')
+            })
+            document.getElementById("my-alert").style.display = "none";
+            document.getElementsByClassName("loader-container")[0].style.display = "none";
+            document.getElementById("post").classList.add('active');
+            document.getElementById("my-alert").style.display = "none";
+            main_image="<%=data.image%>";
+        };
+        $(document).ready(function() {
+            var json_data_url = location.protocol+'//' + location.host + '/api/json-data?id=<%=data.id%>';
+            $('#json-data-datatable').DataTable({
+                    createdRow: function( row, data, dataIndex ) {
+                       $(row).attr("id","row-jd-"+data.id)
+                    },
+                    "lengthMenu": [[5, 10, 20,100,500, -1], [5, 10, 20,100,500, 'All']],
+                    "stateSave": true,
+                    
+                "ajax": {
+                    "url": json_data_url,
+                    "dataSrc": ""
+                    
+                },
+                
+                "columns": [
+                    {"data": "id",},
+                    {"data": "data"},
+                    {"data": "position"},
+                    {
+                        "data": "id",
+                        "render": function (data, type, row) {
+                            return '<span> <span onclick="showJsonData('+row.position+',' + data + ')" class="btn"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span><a id="delete-btn-id" onclick="_deleteJsonData(' + data + ')" data-id="' + data + '"  class="btn deleteAction" ><i class="fa fa-trash-o" aria-hidden="true"></i></a></span>';
+                        }
+                    }
+                ]
+            });
+
+        } );
+
+       
+       
+        function save() {
+            var can_add=true;
+            var jsonData = [];
+            var children = document.getElementById("json-data-datatable").rows;
+            for(var i=0;i<children.length;i++){
+                if(children[i].getAttribute("id")){
+                    var obj = new Object();
+                    obj.id=children[i].children[0].innerHTML;
+                    obj.body=children[i].children[1].innerHTML;
+                    obj.position=children[i].children[2].innerHTML;
+                    jsonData.push(obj);
+                }
+            }
+            var e1 = document.getElementById("select-language");
+            var language = e1.value;
+            if(language==-1){
+                can_add=false;
+                color_red("language-l");
+            }else{
+                color_black("language-l");
+            }
+
+            if(document.getElementById("title-i").value==""){
+                can_add=false;
+                color_red("title-l");
+            }else{
+                color_black("title-l");
+            }
+
+            if(can_add){
+                document.getElementsByClassName("loader-container")[0].style.display = "flex";
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                    "parent_1":"<%=data.parent_1%>",
+                    "parent_2":"<%=data.parent_2%>",
+                    "parent_3":"<%=data.parent_3%>",
+                    "parent_4":"<%=data.parent_4%>",
+                    "parent_5":"<%=data.parent_5%>",
+                    "post_type_id":"<%=data.post_type_id%>",
+                    "publish":"<%=data.publish%>",
+                    "search":document.getElementById("search-i").value,
+                    "title":document.getElementById("title-i").value,
+                    "sub_title":document.getElementById("sub_title-i").value,
+                    "image":main_image,
+                    "sku":"<%=data.sku%>",
+                    "slug":"<%=data.slug%>",
+                    "price":"<%=data.price%>",
+                    "regular_price":"<%=data.regular_price%>",
+                    "description":document.getElementById("desc-i").value,
+                    "availability":"<%=data.availability%>" ,
+                    "meta_title":document.getElementById("meta_title-i").value,
+                    "meta_description":document.getElementById("meta_description-i").value,
+                    "position":"<%=data.position%>",
+                    "locale":language,
+                    "language_parent":document.getElementById("title-i").getAttribute("data-id"),
+                    "json_data":jsonData,
+                    "id":"<%=data.id%>",
+                });
+
+                var requestOptions = {
+                    method: 'PUT',
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: 'follow'
+                };
+
+                fetch(location.protocol+'//' + location.host +"/api/post-language", requestOptions)
+                    .then(response => {
+                        if(response.status==200){
+                            document.getElementsByClassName("loader-container")[0].style.display = "none";
+                            window.location = '/edit-post-specification?id=<%=data.language_parent%>&type_id=<%=data.post_type_id%>';
+                        }else{
+                            response.text().then(result=>{
+                                document.getElementsByClassName("loader-container")[0].style.display = "none";
+                                document.getElementById("my-alert").innerText = result;
+                                document.getElementById("my-alert").style.display = "block";
+                                document.getElementById('my-alert').scrollIntoView();
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementsByClassName("loader-container")[0].style.display = "none";
+                        document.getElementById("my-alert").innerText = "some thing went wrong";
+                        document.getElementById("my-alert").style.display = "block";
+                        document.getElementById('my-alert').scrollIntoView();
+                    });
+            }
+        }
+
+        function getImageByNewSort(){
+            var list = [];
+            var childres = document.getElementById("images-section").children;
+           
+            for (let i = 0; i < childres.length; i++){
+                console.log(childres[i].children[1].getAttribute("data"));
+                list.push(childres[i].children[1].getAttribute("data"));
+            }
+            return list;
+        }
+        
+        function delete_photo(value) {
+            document.getElementById(value).remove();
+        }
+
+        function hover(value) {
+            value.firstChild.style.display = "block"
+        }
+        function unHover(value) {
+            value.firstChild.style.display = "none"
+        }
+
+        function add_photos() {
+            $.each($('#multi-upload-image')[0].files, function (i, file) {
+                var newName=Date.now()+file.name;
+                document.getElementById("images-section").innerHTML= document.getElementById("images-section").innerHTML+"<div id='"+newName+"' onmouseover='hover(this);' onmouseout='unHover(this);' class='added-image-container'><img class='float-delete' width='20' onclick='delete_photo(\""+newName+"\")' src='images/delete.png'><img data='"+location.protocol+'//' + location.host+"/uploads/"+newName+"' class='added-image' src='"+URL.createObjectURL(file)+"'></div>";
+                images.push(location.protocol+'//' + location.host+"/uploads/"+newName);
+                form.append('profile-files', file,newName);
+            });
+        }
+        function add_photo() {
+            $.each($('#upload-image')[0].files, function (i, file) {
+                // alert(location.protocol+'//' + location.host+"/uploads/"+file.name);
+                document.getElementById("main-image-section").innerHTML= "<img class='added-image' src='"+URL.createObjectURL(file)+"'>";
+                var newName=Date.now()+file.name;
+
+                // alert(newName);
+                main_image = location.protocol+'//' + location.host+"/uploads/"+newName;
+                form.append('profile-files', file,newName);
+            });
+        }
+        function change_meta_description(){
+            var text = document.getElementById("meta_description-i").value;
+            document.getElementById("counter").innerHTML="Meta Description length: "+text.length;
+        }
+    </script>
+
+
+</head>
+<body>
+<% include spiner.html%>
+<div class="my-container">
+    <div class="left-side">
+        <% include side_bar.ejs %>
+    </div>
+    <div class="right-side">
+        <div id="my-alert" class="alert alert-danger" role="alert">
+
+        </div>
+        <div class="btn-container">
+            <a class="cancel-btn" href="javascript:history.back()">cancel</a>
+            <span class="submit-btn" onclick="save()">save</span>
+        </div>
+        <div class="dt-container">
+
+            <label class="form-label" id="title-l">Title</label>
+            <input data-id="<%=data.id%>" class="form-control" value="<%=data.title%>" type="text" id="title-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="sub_title-l">Sub Title</label>
+            <input class="form-control" type="text" value="<%=data.sub_title%>" id="sub_title-i"/>
+            <br>
+            <br>
+            
+
+            <label class="form-label" id="desc-l">Description</label>
+            <textarea  class="form-control" style="min-height: 200px;" type="text" id="desc-i"><%=data.description%></textarea>
+            <br>
+            <br>
+
+            <label class="form-label" id="search-l">Search</label>
+            <input class="form-control" value="<%=data.search%>" placeholder="Key Words for search" type="text" id="search-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="language-l">Language</label>
+            <select id="select-language"  class="form-select" aria-label="Default select example"  >
+                <option value="-1" >Open this select menu</option>
+                <%languages.forEach(value=>{%>
+                    <%if(value.code==data.locale){%>
+                        <option selected value="<%=value.code%>"><%=value.title%> </option>
+                    <%}else{%>
+                        <option value="<%=value.code%>"><%=value.title%> </option>
+                    <%}%>
+                <%})%>
+            </select>
+            <br>
+            <br>
+
+
+            <label class="form-label" id="meta_title-l">Meta Title</label>
+            <input class="form-control" type="text" value="<%=data.meta_title%>" id="meta_title-i"/>
+            <br>
+            <br>
+
+            <label class="form-label" id="meta_description-l">Meta Description</label>
+            <input oninput="change_meta_description()" class="form-control" value="<%=data.meta_description%>" type="text" id="meta_description-i"/>
+            <div id="counter">Meta Description length: <%=data.meta_description!=null?data.meta_description.length:0%></div>
+            <br>
+            <br>
+
+            <script src="javascripts/json_data_language.js">
+                
+            </script>
+
+            
+            <br>
+            <h3 style="text-align: center;">Custome Data</h3>
+            <div id="add-json-data"  class="modal black-opacity" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Custome Data</h5>
+                     
+                    </div>
+                    <div class="modal-body">
+                        <label class="form-label" id="json-data-l">Data</label>
+                        <textarea  class="form-control" style="min-height: 200px;" type="text" id="json-data-i"></textarea>
+                        <br>
+                        <br>
+
+                        <label class="form-label" id="json-data-position-l">Position</label>
+                        <input class="form-control" placeholder="please type a number value ex:42" type="number" id="json-data-position-i"/>
+                        <br>
+                        <br>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" onclick="hideJsonData()" data-dismiss="modal">Close</button>
+                      <button id="edit-json-data-btn" type="button" class="btn btn-primary" onclick="editJsonData()">Save changes</button>
+                      <div id="json-data-id" style="display: none;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <table id="json-data-datatable" class="table table-striped" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Data</th>
+                    <th>Position</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+
+
+</body>
+</html>

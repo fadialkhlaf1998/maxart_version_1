@@ -77,12 +77,14 @@
                         response.text().then(result=>{
                             document.getElementById("my-alert").innerText = result;
                             document.getElementById("my-alert").style.display = "block";
+                            document.getElementById('my-alert').scrollIntoView();
                         })
                     }
                 })
                 .catch(error => {
                     document.getElementById("my-alert").innerText = "some thing went wrong";
                     document.getElementById("my-alert").style.display = "block";
+                    document.getElementById('my-alert').scrollIntoView();
                 });
             }
             

@@ -21,7 +21,37 @@ body{
     -ms-border-radius: 4px;
     -o-border-radius: 4px;
 }
+.fa-list {
+    color: white !important;
+    background-image: linear-gradient(#A5E400, #6EAD00);
+    padding: 4px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+}
+.fa-truck{
+    color: white !important;
+    background-image: linear-gradient(#A5E400, #6EAD00);
+    padding: 4px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+}
 
+.fa-list:hover{
+    color: #6EAD00 !important;
+    background-color: transparent;
+    background-image: none;
+}
+.fa-truck:hover{
+    color: #6EAD00 !important;
+    background-color: transparent;
+    background-image: none;
+}
 .fa-pencil-square-o:hover{
     color: #6EAD00 !important;
     background-color: transparent;
@@ -32,7 +62,20 @@ body{
     color: red !important;
     background-color: transparent;
 }
-
+.fa-close:hover{
+    color: red !important;
+    background-color: transparent;
+}
+.fa-close{
+    color: white !important;
+    background-color: red;
+    padding: 4px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+}
 .fa-trash-o{
     color: white !important;
     background-color: red;
@@ -379,11 +422,11 @@ table th {
         height: 100vh !important;
     }
     .left-item-container {
-        margin: 15px 0px 0px 15%;
-        height: 35px;
+        margin: 10px 0px 0px 15%;
+        height: 24px;
 }
     .left-item{
-        font-size: 20px;
+        font-size: 15px;
     }
 }
 @media (min-width: 1400px) {
@@ -391,13 +434,19 @@ table th {
         height: 100vh !important;
     }
     .left-item-container {
-        margin: 20px 0px 0px 15%;
-        height: 50px;
+        margin: 10px 0px 0px 15%;
+        height: 32px;
 }
     .left-item{
-        font-size: 30px;
+        font-size: 20px;
     }
 }
 .black-opacity{
     background: rgba(0, 0, 0, 0.5);
+}
+.bold{
+    font-weight: bold;
+}
+.space-between{
+    display: flex;justify-content: space-between;
 }

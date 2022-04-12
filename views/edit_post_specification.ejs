@@ -22,14 +22,6 @@
     <link href="stylesheets/global.css" rel="stylesheet">
     <link href="stylesheets/popup.css" rel="stylesheet">
 
-    <script type="text/javascript">
-
-        $(document).ready(function() {
-            $("#meta-err").css("display", "none");
-        });
-
-    </script>
-
     <script>
         var form = new FormData();
         var images = [];
@@ -41,6 +33,9 @@
             $( function() {
                 $( "#images-section").sortable();
             } );
+            $('#myModal').on('shown.bs.modal', function () {
+              $('#myInput').trigger('focus')
+            })
             document.getElementById("my-alert").style.display = "none";
             document.getElementsByClassName("loader-container")[0].style.display = "none";
             document.getElementById("post-specification-id=<%=id%>").classList.add('active');
@@ -51,19 +46,79 @@
             if(main_image.length==0||main_image==null){
             }else{
                 document.getElementById("main-image-section").innerHTML="<img class='added-image' src='"+"<%=data.image%>"+"'>";
+
             }
             document.getElementById("images-section").innerHTML="";
             <%data.images.forEach(value=>{%>
             images.push("<%=value.link%>");
             document.getElementById("images-section").innerHTML = document.getElementById("images-section").innerHTML + "<div id='"+"<%=value.link%>"+"' onmouseover='hover(this);' onmouseout='unHover(this);' class='added-image-container'><img class='float-delete' width='20' onclick='delete_photo(\""+"<%=value.link%>"+"\")' src='images/delete.png'><img data='"+"<%=value.link%>"+"' class='added-image' src='"+"<%=value.link%>"+"'></div>"
             <%})%>
-            
         };
+        $(document).ready(function() {
+
+            var language_url = location.protocol+'//' + location.host + '/api/post-language?id=<%=data.id%>';
+            $('#language-datatable').DataTable({
+                    createdRow: function( row, data, dataIndex ) {
+                       $(row).attr("id","row-lang-"+data.id)
+                    },
+                    "lengthMenu": [[5, 10, 20,100,500, -1], [5, 10, 20,100,500, 'All']],
+                    "stateSave": true,
+                    
+                "ajax": {
+                    "url": language_url,
+                    "dataSrc": ""
+                    
+                },
+                
+                "columns": [
+                    {"data": "id",},
+                    {"data": "locale"},
+                    {"data": "title"},
+                    {
+                        "data": "id",
+                        "render": function (data, type, row) {
+                            
+                            return '<span> <a href="/edit-post-language?id='+data+'&locale='+row.locale+'" class="btn"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span><a id="delete-btn-id" onclick="_delete(' + data + ')" data-id="' + data + '"  class="btn deleteAction" ><i class="fa fa-trash-o" aria-hidden="true"></i></a></span>';
+                        }
+                    }
+                ]
+            });
+
+            var json_data_url = location.protocol+'//' + location.host + '/api/json-data?id=<%=data.id%>';
+            $('#json-data-datatable').DataTable({
+                    createdRow: function( row, data, dataIndex ) {
+                       $(row).attr("id","row-jd-"+data.id)
+                    },
+                    "lengthMenu": [[5, 10, 20,100,500, -1], [5, 10, 20,100,500, 'All']],
+                    "stateSave": true,
+                    
+                "ajax": {
+                    "url": json_data_url,
+                    "dataSrc": ""
+                    
+                },
+                
+                "columns": [
+                    {"data": "id",},
+                    {"data": "data"},
+                    {"data": "position"},
+                    {
+                        "data": "id",
+                        "render": function (data, type, row) {
+                            return '<span> <span onclick="showJsonData(true,'+row.position+',' + data + ')" class="btn"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span><a id="delete-btn-id" onclick="_deleteJsonData(' + data + ')" data-id="' + data + '"  class="btn deleteAction" ><i class="fa fa-trash-o" aria-hidden="true"></i></a></span>';
+                        }
+                    }
+                ]
+            });
+
+        } );
+
+       
+       
         function save() {
-            var can_add=true;
-
-
+            var can_add=true;            
             var post_type_id = "<%=id%>";
+          
             var e2 = document.getElementById("select-parent_1");
             var parent_1 = e2.value;
             if(parent_1==-1){
@@ -133,6 +188,8 @@
                     "meta_title":document.getElementById("meta_title-i").value,
                     "meta_description":document.getElementById("meta_description-i").value,
                     "position":document.getElementById("position-i").value,
+                    "locale":"en",
+                    "language_parent":null,
                     "id":document.getElementById("title-i").getAttribute("data-id"),
                 });
 
@@ -158,7 +215,7 @@
 
                             $.ajax(settings).done(function (response) {
                                 document.getElementsByClassName("loader-container")[0].style.display = "none";
-                                window.location = '/post-specification?id=<%=id%>';
+                                window.location = '/post';
                             });
 
 
@@ -167,6 +224,7 @@
                                 document.getElementsByClassName("loader-container")[0].style.display = "none";
                                 document.getElementById("my-alert").innerText = result;
                                 document.getElementById("my-alert").style.display = "block";
+                                document.getElementById('my-alert').scrollIntoView();
                             })
                         }
                     })
@@ -174,8 +232,47 @@
                         document.getElementsByClassName("loader-container")[0].style.display = "none";
                         document.getElementById("my-alert").innerText = "some thing went wrong";
                         document.getElementById("my-alert").style.display = "block";
+                        document.getElementById('my-alert').scrollIntoView();
                     });
             }
+        }
+
+        function _delete(id) {
+            let isExecuted = confirm("Are you sure to delete this element?");
+            if(isExecuted){
+                var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+                "id": id
+            });
+
+            var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch(location.protocol+'//' + location.host+"/api/post", requestOptions)
+                .then(response => {
+                    if(response.status==200){
+                        var myobj = document.getElementById("row"+id);
+                        myobj.remove();
+                    }else{
+
+                        response.text().then(result=>{
+                            document.getElementById("my-alert").innerText = result;
+                            document.getElementById("my-alert").style.display = "block";
+                        })
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("my-alert").innerText = "some thing went wrong";
+                    document.getElementById("my-alert").style.display = "block";
+                });
+            }
+            
         }
 
         function getImageByNewSort(){
@@ -222,9 +319,6 @@
         function change_meta_description(){
             var text = document.getElementById("meta_description-i").value;
             document.getElementById("counter").innerHTML="Meta Description length: "+text.length;
-        }
-        function test(){
-           console.log("****")
         }
     </script>
 
@@ -399,13 +493,14 @@
             <br>
             <br>
 
+
             <label class="form-label" id="meta_title-l">Meta Title</label>
             <input class="form-control" type="text" value="<%=data.meta_title%>" id="meta_title-i"/>
             <br>
             <br>
 
             <label class="form-label" id="meta_description-l">Meta Description</label>
-            <input onwaiting="test()" oninput="change_meta_description()" class="form-control" value="<%=data.meta_description%>" type="text" id="meta_description-i"/>
+            <input oninput="change_meta_description()" class="form-control" value="<%=data.meta_description%>" type="text" id="meta_description-i"/>
             <div id="counter">Meta Description length: <%=data.meta_description!=null?data.meta_description.length:0%></div>
             <br>
             <br>
@@ -416,13 +511,89 @@
             <br>
 
 
+            <script src="javascripts/json_date.js">
+                
+            </script>
+
+            <div style="text-align: right;">
+                <button type="button" class="btn btn-primary" data-toggle="modal" onclick="showJsonData(false,'',-1)" data-target="#exampleModal">
+                    Add Cosutm Data
+                </button>
+            </div>
+            <br>
+            <h3 style="text-align: center;">Custome Data</h3>
+            <div id="add-json-data"  class="modal black-opacity" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Custome Data</h5>
+                     
+                    </div>
+                    <div class="modal-body">
+                        <label class="form-label" id="json-data-l">Data</label>
+                        <textarea  class="form-control" style="min-height: 200px;" type="text" id="json-data-i"></textarea>
+                        <br>
+                        <br>
+
+                        <label class="form-label" id="json-data-position-l">Position</label>
+                        <input class="form-control" placeholder="please type a number value ex:42" type="number" id="json-data-position-i"/>
+                        <br>
+                        <br>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" onclick="hideJsonData()" data-dismiss="modal">Close</button>
+                      <button id="add-json-data-btn" type="button" class="btn btn-primary" onclick="addJsonData()">Save changes</button>
+                      <button id="edit-json-data-btn" type="button" class="btn btn-primary" onclick="editJsonData()">Save changes</button>
+                      <div id="json-data-id" style="display: none;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <table id="json-data-datatable" class="table table-striped" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Data</th>
+                    <th>Position</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+            </table>
+
+            <br>
+            <br>
+
+           
+
+
+            <br>
+            <br>
+            <div style="text-align: right;">
+                <a href="/add-post-language?id=<%=data.id%>" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                    Add Post Language
+                </a>
+            </div>
+            <br>
+            <h3 style="text-align: center;">Language</h3>
+              <table id="language-datatable" class="table table-striped" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Locale</th>
+                    <th>Title</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+            </table>
+
         </div>
     </div>
 </div>
 
 <script>
 
-</scrip>
+</script>
 
 
 

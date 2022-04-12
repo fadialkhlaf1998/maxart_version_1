@@ -25,12 +25,14 @@ function _deleteJsonData(id){
                         response.text().then(result=>{
                             document.getElementById("my-alert").innerText = result;
                             document.getElementById("my-alert").style.display = "block";
+                            window.scroll(0,findPos(document.getElementById("my-alert")));
                         })
                     }
                 })
                 .catch(error => {
                     document.getElementById("my-alert").innerText = "some thing went wrong";
                     document.getElementById("my-alert").style.display = "block";
+                    window.scroll(0,findPos(document.getElementById("my-alert")));
                 });
             }
 }

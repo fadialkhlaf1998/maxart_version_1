@@ -55,6 +55,35 @@
             <%})%>
         };
         $(document).ready(function() {
+
+            var language_url = location.protocol+'//' + location.host + '/api/post-language?id=<%=data.id%>';
+            $('#language-datatable').DataTable({
+                    createdRow: function( row, data, dataIndex ) {
+                       $(row).attr("id","row-lang-"+data.id)
+                    },
+                    "lengthMenu": [[5, 10, 20,100,500, -1], [5, 10, 20,100,500, 'All']],
+                    "stateSave": true,
+                    
+                "ajax": {
+                    "url": language_url,
+                    "dataSrc": ""
+                    
+                },
+                
+                "columns": [
+                    {"data": "id",},
+                    {"data": "locale"},
+                    {"data": "title"},
+                    {
+                        "data": "id",
+                        "render": function (data, type, row) {
+                            
+                            return '<span> <a href="/edit-post-language?id='+data+'&locale='+row.locale+'" class="btn"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span><a id="delete-btn-id" onclick="_delete(' + data + ')" data-id="' + data + '"  class="btn deleteAction" ><i class="fa fa-trash-o" aria-hidden="true"></i></a></span>';
+                        }
+                    }
+                ]
+            });
+
             var json_data_url = location.protocol+'//' + location.host + '/api/json-data?id=<%=data.id%>';
             $('#json-data-datatable').DataTable({
                     createdRow: function( row, data, dataIndex ) {
@@ -167,6 +196,8 @@
                     "meta_title":document.getElementById("meta_title-i").value,
                     "meta_description":document.getElementById("meta_description-i").value,
                     "position":document.getElementById("position-i").value,
+                    "locale":"en",
+                    "language_parent":null,
                     "id":document.getElementById("title-i").getAttribute("data-id"),
                 });
 
@@ -201,6 +232,7 @@
                                 document.getElementsByClassName("loader-container")[0].style.display = "none";
                                 document.getElementById("my-alert").innerText = result;
                                 document.getElementById("my-alert").style.display = "block";
+                                document.getElementById('my-alert').scrollIntoView();
                             })
                         }
                     })
@@ -208,8 +240,47 @@
                         document.getElementsByClassName("loader-container")[0].style.display = "none";
                         document.getElementById("my-alert").innerText = "some thing went wrong";
                         document.getElementById("my-alert").style.display = "block";
+                        document.getElementById('my-alert').scrollIntoView();
                     });
             }
+        }
+
+        function _delete(id) {
+            let isExecuted = confirm("Are you sure to delete this element?");
+            if(isExecuted){
+                var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+                "id": id
+            });
+
+            var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch(location.protocol+'//' + location.host+"/api/post", requestOptions)
+                .then(response => {
+                    if(response.status==200){
+                        var myobj = document.getElementById("row"+id);
+                        myobj.remove();
+                    }else{
+
+                        response.text().then(result=>{
+                            document.getElementById("my-alert").innerText = result;
+                            document.getElementById("my-alert").style.display = "block";
+                        })
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("my-alert").innerText = "some thing went wrong";
+                    document.getElementById("my-alert").style.display = "block";
+                });
+            }
+            
         }
 
         function getImageByNewSort(){
@@ -509,6 +580,32 @@
                     <th>Id</th>
                     <th>Data</th>
                     <th>Position</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+            </table>
+
+            <br>
+            <br>
+
+           
+
+
+            <br>
+            <br>
+            <div style="text-align: right;">
+                <a href="/add-post-language?id=<%=data.id%>" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                    Add Post Language
+                </a>
+            </div>
+            <br>
+            <h3 style="text-align: center;">Language</h3>
+              <table id="language-datatable" class="table table-striped" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Locale</th>
+                    <th>Title</th>
                     <th>Action</th>
                 </tr>
                 </thead>

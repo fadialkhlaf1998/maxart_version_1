@@ -22,12 +22,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/41234.7.0/css/font-awesome.min.css">
     <link href="stylesheets/global.css" rel="stylesheet">
 
-
- 
-    <script>
-  
-    </script>
-
     <script type="text/javascript">
 
         $(document).ready(function() {
@@ -43,17 +37,14 @@
 
 
         document.onreadystatechange = () => {
-            
             $("select").select2();
             $( function() {
                 $( "#images-section").sortable();
             } );
             document.getElementById("my-alert").style.display = "none";
             document.getElementsByClassName("loader-container")[0].style.display = "none";
-            document.getElementById("post").classList.add('active');
-            
+            document.getElementById("post-specification-id=<%=id%>").classList.add('active');
         };
-        
         function getImageByNewSort(){
             var list = [];
             var childres = document.getElementById("images-section").children;
@@ -65,16 +56,11 @@
             return list;
         }
         function save() {
-            var can_add=false;
-            console.log();
-            var e1 = document.getElementById("select-post_type");
-            var post_type_id = e1.value;
-            if(post_type_id==-1){
-                can_add=false;
-                color_red("post_type-l");
-            }else{
-                color_black("post_type-l");
-            }
+            var can_add=true;
+
+
+            var post_type_id = "<%=id%>";
+           
 
             var e2 = document.getElementById("select-parent_1");
             var parent_1 = e2.value;
@@ -174,7 +160,7 @@
 
                             $.ajax(settings).done(function (response) {
                                 document.getElementsByClassName("loader-container")[0].style.display = "none";
-                                window.location = '/post';
+                                window.location = '/post-specification?id=<%=id%>';
                             });
 
 
@@ -183,7 +169,6 @@
                                 document.getElementsByClassName("loader-container")[0].style.display = "none";
                                 document.getElementById("my-alert").innerText = result;
                                 document.getElementById("my-alert").style.display = "block";
-                                document.getElementById('my-alert').scrollIntoView();
                             })
                         }
                     })
@@ -191,7 +176,6 @@
                         document.getElementsByClassName("loader-container")[0].style.display = "none";
                         document.getElementById("my-alert").innerText = "some thing went wrong";
                         document.getElementById("my-alert").style.display = "block";
-                        document.getElementById('my-alert').scrollIntoView();
                     });
             }
         }
@@ -206,7 +190,6 @@
         function unHover(value) {
             value.firstChild.style.display = "none"
         }
-
 
         function add_photos() {
             $.each($('#multi-upload-image')[0].files, function (i, file) {
@@ -274,15 +257,6 @@
             <br>
             <br>
             
-            <label class="form-label" id="post_type-l">Post Type</label>
-            <select id="select-post_type"  class="form-select" aria-label="Default select example"  >
-                <option value="-1" selected>Open this select menu</option>
-                <%post_type.forEach(value=>{%>
-                <option value="<%=value.id%>"><%=value.name%></option>
-                <%})%>
-            </select>
-            <br>
-            <br>
 
             <label class="form-label" id="desc-l">Description</label>
             <textarea  class="form-control" style="min-height: 200px;" type="text" id="desc-i"></textarea>
@@ -389,7 +363,8 @@
             <input class="form-control" type="text" id="slug-i"/>
             <br>
             <br>
-       
+
+            
             <label class="form-label" id="meta_title-l">Meta Title</label>
             <input class="form-control" type="text" id="meta_title-i"/>
             <br>
@@ -406,14 +381,14 @@
             <br>
             <br>
 
-      
-
-
 
         </div>
     </div>
 </div>
 
+<script>
+
+</script>
 
 
 

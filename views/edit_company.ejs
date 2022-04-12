@@ -66,6 +66,7 @@
                                 document.getElementsByClassName("loader-container")[0].style.display = "none";
                                 document.getElementById("my-alert").innerText = result;
                                 document.getElementById("my-alert").style.display = "block";
+                                document.getElementById('my-alert').scrollIntoView();
                             })
                         }
                     })
@@ -73,6 +74,7 @@
                         document.getElementsByClassName("loader-container")[0].style.display = "none";
                         document.getElementById("my-alert").innerText = "some thing went wrong";
                         document.getElementById("my-alert").style.display = "block";
+                        document.getElementById('my-alert').scrollIntoView();
                     });
             }
         }
