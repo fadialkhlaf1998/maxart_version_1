@@ -47,7 +47,7 @@ function selectCustomerOrders() {
 function post() {
     return app.post('/api/order', (req, res, next) => {
         if (req.session.role == "user") {
-            entity.insert(req.session.company_id,req.body.cutomer_id,req.body.first_name,req.body.last_name,req.body.address_1,req.body.address_2,
+            entity.insert(req.session.company_id,req.body.customer_id,req.body.first_name,req.body.last_name,req.body.address_1,req.body.address_2,
                 req.body.phone,req.body.country,req.body.state,req.body.order_state,req.body.total,req.body.sub_total,req.body.shipping,req.body.discount).then(value => {
                     req.body.lineItems.forEach(elm=>{
                         line_items.insert(req.session.company_id,elm.post_id,value.insertId,elm.count);

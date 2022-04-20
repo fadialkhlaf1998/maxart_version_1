@@ -25,17 +25,22 @@
             document.getElementById("tool").classList.add('active');
         };
         function next() {
-            var can_add=true;
-            var dnd = document.querySelector('#select-company');
-           
-            var e1 = document.getElementById("select-company");
-            var company_id = e1.value;
-            var company = dnd.options[dnd.selectedIndex].id;
-            if(company_id==-1){
+            var can_add=false;
+            var children = document.getElementById("main-data-section").children;
+            if(children.length==0){
                 can_add=false;
-                color_red("company-l");
+                color_red("main-data-l");
             }else{
-                color_black("company-l");
+                color_black("main-data-l");
+            }
+
+            var e1 = document.getElementById("select-cart-data");
+            var cart_data = e1.value;
+            if(cart_data==-1){
+                can_add=false;
+                color_red("cart-data-l");
+            }else{
+                color_black("cart-data-l");
             }
             if(can_add){
                 document.getElementsByClassName("loader-container")[0].style.display = "flex";
@@ -57,7 +62,7 @@
                 fetch(location.protocol+'//' + location.host +"/api/create-directory", requestOptions)
                     .then(response => {
                         if(response.status==200){
-                            window.location = '/main-data';
+                            window.location = '/tool';
                         }else{
 
                             response.text().then(result=>{
@@ -74,9 +79,47 @@
                     });
             }
         }
+
+        function addData(){
+            var e1 = document.getElementById("select-main-data");
+            var id = e1.value;
+            var dnd = document.querySelector('#select-main-data');
+            var name = dnd.options[dnd.selectedIndex].id;
+            var children = document.getElementById("main-data-section").children;
+            if(id==-1){
+                return ;
+            }
+            for(var i=0;i<children.length;i++){
+                if(id == children[i].getAttribute("id")){
+                    return ;
+                }
+            }
+            document.getElementById('main-data-section').innerHTML = 
+            document.getElementById('main-data-section').innerHTML +
+            '<span onclick="_deleteItem(this)" class="mini-card" id="'+id+'">'+name+'  <i  class="fa fa-close"></i></span>';
+            
+        }
+        function getIdsList(){
+            var arr = [];
+            for(var i=0;i<children.length;i++){
+                arr.push(children[i].getAttribute("id"));
+            }
+            return arr;
+        }
+        function _deleteItem(elm){
+            elm.remove();
+        }
     </script>
 
-
+<style>
+    .mini-card{
+        padding: 7px 10px;
+        border-radius: 2px;
+        background: grey;
+        margin: 10px;
+        color: white;
+    }
+</style>
 </head>
 <body>
 <% include ../spiner.html%>
@@ -93,15 +136,27 @@
             <span class="submit-btn" onclick="next()">Next</span>
         </div>
         <div class="dt-container">   
-            <label class="form-label" id="company-l">Company</label>
-            <select id="select-company"  class="form-select" aria-label="Default select example" >
+            <label class="form-label" id="main-data-l">Main Data</label>
+            <select id="select-main-data" onchange="addData()"  class="form-select" aria-label="Default select example" >
                 <option value="-1" selected>Open this select menu</option>
-                <%company.forEach(value=>{%>
+                <%types.forEach(value=>{%>
                 <option id="<%=value.name%>" value="<%=value.id%>" value_2="<%=value.name%>"><%=value.name%></option>
                 <%})%>
             </select>
             <br>
+            <div id="main-data-section">
+
+            </div>
             <br>
+            <br>
+
+            <label class="form-label" id="cart-data-l">Cart Data</label>
+            <select id="select-cart-data"  class="form-select" aria-label="Default select example" >
+                <option value="-1" selected>Open this select menu</option>
+                <%types.forEach(value=>{%>
+                <option id="<%=value.name%>" value="<%=value.id%>" value_2="<%=value.name%>"><%=value.name%></option>
+                <%})%>
+            </select>
         </div>
     </div>
 </div>

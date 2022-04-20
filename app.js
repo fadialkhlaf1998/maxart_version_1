@@ -160,8 +160,6 @@ app.use(post.help());
 app.use(app_key.selectByPublicKey());
 app.use(app_key.selectByCompanyId());
 
-app.use(tool.addPage());
-
 app.use(file_writer.createDirectory());
 
 app.use(post_mobile.post_type_mobile());
@@ -205,6 +203,9 @@ app.use(order.refuse());
 app.use(order.getLineItems());
 app.use(order.ViewLineItemsPage());
 app.use(order.selectCustomerOrders());
+
+app.use(tool.choose_company());
+app.use(tool.main_data());
 
 var multer_2  = require('multer');
 var storage_2 = multer_2.diskStorage({
